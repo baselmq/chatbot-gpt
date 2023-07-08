@@ -1,0 +1,28 @@
+.form_chat {
+  position: relative;
+}
+.tesssst {
+  position: fixed;
+  bottom: 16px;
+  background-color: #242627;
+  width: 100%;
+  max-width: 78.5rem;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  padding:10px 0 20px;
+}
+.input_chat {
+  background-color: #141515;
+  border-radius: 10px;
+  margin: 0 20px;
+  width: 100%;
+  max-width: 800px;
+  padding: 15px;
+}
+.input_chat input {
+  border: none;
+  outline: none;
+  width: 100%;
+  background-color: transparent;
+  color: #fff;
+}

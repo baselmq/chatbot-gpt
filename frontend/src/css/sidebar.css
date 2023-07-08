@@ -1,0 +1,33 @@
+.container__sidebar {
+  background-color: #151718;
+  width: 100%;
+  height: 95vh;
+}
+.card_new_chat {
+  border: 2px solid #323337;
+  border-radius: 10px;
+  padding: 15px;
+}
+.card__history {
+  background-color: #323337;
+  border-radius: 10px;
+  padding: 15px;
+}
+.card__history:hover {
+  background-color: #3a3b3d;
+}
+.text__sidebar {
+  color: #fff;
+  font-size: 14px;
+}
+.custom__icons {
+  color: #fff;
+}
+.brand_logo {
+  width: 40px;
+}
+.text__brand {
+  color: #fff;
+  font-size: 20px;
+  text-transform: uppercase;
+}
