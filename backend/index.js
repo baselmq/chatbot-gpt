@@ -9,9 +9,10 @@ app.use(bodyParser.json());
 app.use(cors());
 
 const configuration = new Configuration({
-  organization: process.env.OPENAI_API_ORG,
+  organization:process.env.OPENAI_API_ORG,
   apiKey: process.env.OPENAI_API_KEY,
 });
+
 
 const openAi = new OpenAIApi(configuration);
 app.post("/", async (req, res) => {
