@@ -4,19 +4,13 @@ import CardChatHistory from "./CardChatHistory";
 import { useContext } from "react";
 import { DataCxt } from "../context/DataProvider";
 const SideBar = () => {
-  const {
-    setMsgSubmit,
-    setValue,
-    setChats,
-    setCurrentTitle,
-    previousChats,
-  } = useContext(DataCxt);
+  const { setValue, setMessage, previousChats, setCurrentTitle } =
+    useContext(DataCxt);
 
   const createNewChat = () => {
-    setChats([]);
     setValue("");
+    setMessage(null);
     setCurrentTitle(null);
-    setMsgSubmit(null);
   };
 
   const uniqueTitles = Array.from(
@@ -24,9 +18,8 @@ const SideBar = () => {
   );
   const handleClick = (uniqueTitle) => {
     setCurrentTitle(uniqueTitle);
-    setChats([]);
     setValue("");
-    setMsgSubmit(null);
+    setMessage(null);
   };
   return (
     <div className="container__sidebar my-3">
@@ -59,7 +52,7 @@ const Brand = () => {
   return (
     <div className="brand d-flex align-items-center gap-2 mb-3">
       <img src={logo} className="brand_logo" alt="logo" />
-      <span className="text__brand">SuperChat</span>
+      <span className="text__brand">SuperChat AI</span>
     </div>
   );
 };

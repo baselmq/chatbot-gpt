@@ -4,34 +4,37 @@ export const DataCxt = createContext("");
 DataCxt.displayName = "Data";
 
 const DataContextProvider = (props) => {
-  const [resMsg, setResMsg] = useState(null);
-  const [value, setValue] = useState(null);
-  const [chats, setChats] = useState([]);
-  const [msgSubmit, setMsgSubmit] = useState(null);
   const [message, setMessage] = useState(null);
-  const [isTyping, setIsTyping] = useState(false);
+  const [value, setValue] = useState("");
+  const [streamData, setStreamData] = useState("");
+  const [saveValue, setSaveValue] = useState("");
   const [previousChats, setPreviousChats] = useState([]);
   const [currentTitle, setCurrentTitle] = useState(null);
+  const [isTyping, setIsTyping] = useState(false);
+
+  useEffect(() => {
+    if (value !== "" && value !== null) {
+      setSaveValue(value);
+    }
+  }, [value]);
 
   const values = {
-    resMsg,
-    setResMsg,
+    streamData,
+    setStreamData,
+    saveValue,
+    setSaveValue,
     value,
     setValue,
     message,
     setMessage,
-    chats,
-    setChats,
     isTyping,
     setIsTyping,
     previousChats,
     setPreviousChats,
     currentTitle,
     setCurrentTitle,
-    msgSubmit,
-    setMsgSubmit,
   };
-  useEffect(() => {}, []);
+
   return <DataCxt.Provider value={values}>{props.children}</DataCxt.Provider>;
 };
 

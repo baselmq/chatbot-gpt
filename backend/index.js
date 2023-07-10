@@ -1,33 +1,37 @@
-import { Configuration, OpenAIApi } from "openai";
-import express from "express";
-import cors from "cors";
-import bodyParser from "body-parser";
+const express = require("express");
+const cors = require("cors");
+require("dotenv").config();
 
 const app = express();
 const port = 8080;
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(cors());
 
-const configuration = new Configuration({
-  organization:process.env.OPENAI_API_ORG,
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-
-const openAi = new OpenAIApi(configuration);
-app.post("/", async (req, res) => {
-  const { chats } = req.body;
-  const result = await openAi.createChatCompletion({
-    model: "gpt-3.5-turbo",
-    messages: [
-      { role: "system", content: "you can write email and litter" },
-      ...chats,
-    ],
-  });
-  res.json({
-    output: result.data.choices[0].message,
-  });
+const API_KEY = process.env.API_KEY;
+app.post("/completions", async (req, res) => {
+  const options = {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: req.body.message }],
+      // max_tokens: 100,
+    }),
+  };
+  try {
+    const response = await fetch(
+      "https://api.openai.com/v1/chat/completions",
+      options
+    );
+    const data = await response.json();
+    res.send(data);
+  } catch (error) {
+    console.error(error);
+  }
 });
 app.listen(port, () => {
-  console.log(`Listening on port http://localhost:${port}`);
+  console.log(`Listening on port http://localhost:${port}/completions`);
 });

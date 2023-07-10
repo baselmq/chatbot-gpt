@@ -9,12 +9,11 @@ import "bootstrap/dist/css/bootstrap.css";
 import "../css/index.css";
 
 const Body = () => {
-  const { isTyping, previousChats, currentTitle, message } =
+  const { streamData, saveValue, isTyping, previousChats, currentTitle } =
     useContext(DataCxt);
   const currentChat = previousChats.filter(
     (prevChat) => prevChat.title === currentTitle
   );
-
   return (
     <div className="container__body">
       <div className="content__chat">
@@ -42,26 +41,50 @@ const Body = () => {
             : ""}
         </section>
         <div className={isTyping ? "" : "hide"}>
-          <p>
+          <pre>
             {isTyping ? (
               <>
-                <div className="user_msg d-flex align-items-center gap-2 m-3">
+                <div className="user_msg d-flex gap-2 m-3">
                   <img src={userIcon} className="chat__icon" alt="chat" />
-                  {message}
+                  <div className="d-flex align-items-center">
+                    <span className="">{saveValue}</span>
+                  </div>
                 </div>
-                <div className="assistant_msg d-flex align-items-center gap-2 m-3">
+                <div className="assistant_msg d-flex gap-2 m-3">
                   <img src={chatIcon} className="chat__icon" alt="chat" />
-                  <i>Typing...</i>
+                  <div className="d-flex align-items-center">
+                    <span>
+                      {streamData === "" ? "Generating..." : streamData}
+                    </span>
+                  </div>
                 </div>
               </>
             ) : (
               ""
             )}
-          </p>
+          </pre>
+        </div>
+        <div className="pt-5">
+          {!isTyping && currentChat.length <= 0 ? (
+            <div className="d-flex justify-content-center align-items-center flex-column">
+              <div className="welcome">welcome in chat AI</div>
+              <lottie-player
+                src="https://lottie.host/72a6781e-028a-4966-8a7d-370af5f1a137/bFcfQmbZ8J.json"
+                background="transparent"
+                speed="1"
+                style={{ width: "400px" }}
+                loop
+                autoplay
+              ></lottie-player>
+            </div>
+          ) : (
+            ""
+          )}
         </div>
       </div>
-
+      {/*---------------- InputField ------------------- */}
       <InputField />
+      {/*---------------- InputField ------------------- */}
     </div>
   );
 };

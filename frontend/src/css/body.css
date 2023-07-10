@@ -4,11 +4,11 @@
   height: 95.5vh;
   border-radius: 20px;
 }
-.content__chat{
+.content__chat {
   height: 95.5vh;
   overflow: hidden;
   overflow-y: scroll;
-  padding:0 100px 100px 100px;
+  padding: 0 100px 100px 100px;
 }
 .user_msg {
   color: #fff;
@@ -24,10 +24,15 @@
   background-color: #8328c84c;
   border-radius: 20px;
   padding: 15px;
-  border: 2px solid #8228c8;
+  border: 2px solid #7525b4;
   font-size: 15px;
   white-space: pre-wrap;
 }
 .chat__icon {
   width: 35px;
+}
+.welcome {
+  color: #fff;
+  font-size: 45px;
+  text-transform: capitalize;
 }

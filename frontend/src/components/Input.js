@@ -1,69 +1,122 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { DataCxt } from "../context/DataProvider";
-import axios from "axios";
 
+const API_KEY = "";
 const InputField = () => {
-  const { msgSubmit, setMsgSubmit, value, setValue, resMsg, setResMsg } =
-    useContext(DataCxt);
-  const { chats, setChats, setIsTyping, currentTitle } = useContext(DataCxt);
-  const { setCurrentTitle, setPreviousChats, setMessage } = useContext(DataCxt);
-  const apiUrl = "http://localhost:8080/";
-  const headers = {
-    "Content-Type": "application/json",
-  };
+  const [streamComplete, setStreamComplete] = useState(false);
+  const {
+    streamData,
+    setStreamData,
+    saveValue,
+    value,
+    setValue,
+    message,
+    setMessage,
+    setIsTyping,
+    setPreviousChats,
+    currentTitle,
+    setCurrentTitle,
+  } = useContext(DataCxt);
+
   useEffect(() => {
-    if (!currentTitle && msgSubmit && chats) {
-      setCurrentTitle(msgSubmit);
+    if (streamComplete) {
+      setMessage(streamData);
+      setStreamData("");
+      setStreamComplete(false);
+      setIsTyping(false);
     }
-    if (currentTitle && msgSubmit && chats) {
-      setPreviousChats((prevChat) => [
-        ...prevChat,
+  }, [streamComplete, streamData]);
+
+  useEffect(() => {
+    if (!currentTitle && saveValue && message) {
+      setCurrentTitle(saveValue);
+    }
+    if (currentTitle && saveValue && message) {
+      setPreviousChats((prevChats) => [
+        ...prevChats,
         {
           title: currentTitle,
           role: "user",
-          content: msgSubmit,
+          content: saveValue,
         },
         {
           title: currentTitle,
-          role: resMsg.role,
-          content: resMsg.content,
+          role: "assistant",
+          content: message,
         },
       ]);
     }
-  }, [msgSubmit, currentTitle]);
-  const submit = async (e, message) => {
-    e.preventDefault();
-    const v = e.target.message.value;
-    setMessage(v);
+  }, [message, currentTitle]);
 
-    if (!message) return;
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!value) return;
+    setValue("");
     setIsTyping(true);
 
-    let msgs = chats;
-    msgs.push({ role: "user", content: message });
-    setChats(msgs);
-    setValue("");
-
+    const options = {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: value }],
+        stream: true,
+      }),
+    };
     try {
-      const response = await axios.post(apiUrl, { chats }, { headers });
-      msgs.push(response.data.output);
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        options
+      );
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+      while (true) {
+        const chunk = await reader.read();
+        const { done, value } = chunk;
 
-      setResMsg(response.data.output);
-      setChats(msgs);
-      setIsTyping(false);
-      setMsgSubmit(v);
+        if (done) {
+          break;
+        }
+        const decodedChunk = decoder.decode(value);
+
+        const lines = decodedChunk.split("\n");
+
+        const parsedLines = lines
+          .map((line) => line.replace(/^data: /, "").trim())
+          .filter((line) => line !== "" && line !== "[DONE]")
+          .map((line) => JSON.parse(line));
+
+        for (const parsedLine of parsedLines) {
+          const { choices } = parsedLine;
+          const { delta } = choices[0];
+          const { content } = delta;
+          if (content) {
+            setStreamData((prevData) => prevData + content);
+          }
+        }
+        // Check if stream is complete
+        const lastLine = parsedLines[parsedLines.length - 1];
+        const { choices } = lastLine;
+        const { finish_reason } = choices[0];
+        if (finish_reason && finish_reason === "stop") {
+          setStreamComplete(true);
+        }
+      }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
   return (
-    <form action="" className="form_chat" onSubmit={(e) => submit(e, value)}>
+    <form action="" className="form_chat" onSubmit={(e) => submit(e)}>
       <div className="d-flex justify-content-center align-items-center tesssst">
         <div className="input_chat d-flex justify-content-center align-items-center gap-3 mx-3">
           <input
             type="text"
             name="message"
-            value={value == null ? "" : value}
+            value={value}
             placeholder="Type a message here and hit Enter..."
             onChange={(e) => setValue(e.target.value)}
           />
@@ -75,33 +128,3 @@ const InputField = () => {
 };
 
 export default InputField;
-
-// const submit = async (e, message) => {
-//   e.preventDefault();
-
-//   if (!message) return;
-//   setIsTyping(true);
-
-//   let msgs = chats;
-//   msgs.push({ role: "user", content: message });
-//   setChats(msgs);
-//   setMessage("");
-//   fetch("http://localhost:8080/", {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify({
-//       chats,
-//     }),
-//   })
-//     .then((response) => response.json())
-//     .then((data) => {
-//       msgs.push(data.output);
-//       setChats(msgs);
-//       setIsTyping(false);
-//     })
-//     .catch((error) => {
-//       console.log(error);
-//     });
-// };
